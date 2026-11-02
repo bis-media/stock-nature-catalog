@@ -19,12 +19,9 @@ select,input,button{font-family:inherit;font-size:14px}
 #sortSel{padding:7px 10px;border-radius:7px;border:1px solid #e2e2e2;background:#fff;color:var(--ink)}
 #expBtn{padding:7px 12px;border-radius:6px;border:none;background:#1a1a1a;color:#fff;font-weight:600;cursor:pointer;white-space:nowrap}
 #expBtn:hover{background:#000}
-#langBtn{padding:7px 12px;border-radius:7px;border:1px solid var(--accent);background:#fff;color:var(--accent);font-weight:700;cursor:pointer}
-#langBtn:hover{background:var(--accent);color:#fff}
 .wm{font-size:21px;font-weight:800;letter-spacing:-.4px;line-height:1}
 #brandT{color:var(--accent)}
 .wmm{color:var(--ink)}
-#langBtn:hover{background:rgba(255,255,255,.15)}
 .search{flex:1;min-width:200px;position:relative}
 .search input{width:100%;padding:9px 12px 9px 34px;border-radius:8px;border:1px solid #eceff3;background:#f2f4f6;outline:none;color:var(--ink)}
 .search input:focus{background:#fff;border-color:var(--accent)}
@@ -147,10 +144,10 @@ main{flex:1;min-width:0}
 <body>
 <div id="gate"><div class="gbox">
   <div class="glogo"><b>UTV</b> media</div>
-  <p class="gtag">Введите пароль</p>
-  <input id="gpass" type="password" placeholder="Пароль" autocomplete="off">
+  <p class="gtag">Enter password</p>
+  <input id="gpass" type="password" placeholder="Password" autocomplete="off">
   <div class="gerr" id="gerr"></div>
-  <button id="gbtn">Войти</button>
+  <button id="gbtn">Sign in</button>
 </div></div>
 <div id="adminBar">
   <b>РЕЖИМ АДМИНА</b>
@@ -175,7 +172,6 @@ main{flex:1;min-width:0}
       <option value="size" id="oSize">По крупности</option>
       <option value="video" id="oVideo">По ролику</option>
     </select>
-    <button id="langBtn" title="Switch interface to English">EN</button>
     <button id="expBtn" title="Выгрузить кадры текущей выборки в Excel (без фото)">⬇ Excel</button>
     <div class="stats" id="stats"></div>
   </div>
@@ -284,7 +280,6 @@ function bindUI(list){
   document.getElementById("mOr").addEventListener("click",()=>setMode("or"));
   document.getElementById("ftog").addEventListener("click",()=>document.getElementById("filters").classList.toggle("collapsed"));
   document.getElementById("expBtn").addEventListener("click",exportXls);
-  document.getElementById("langBtn").addEventListener("click",function(){state.lang=(state.lang==="ru"?"en":"ru");applyLang();});
   const io=new IntersectionObserver(es=>{if(es[0].isIntersecting)more();},{rootMargin:"600px"});
   io.observe(document.getElementById("sentinel"));
   document.getElementById("grid").addEventListener("click",function(e){var b=e.target.closest(".editBtn");if(b)openEdit(+b.dataset.edit);});
@@ -418,10 +413,10 @@ function initGate(){
   document.getElementById("gpass").addEventListener("keydown",function(e){if(e.key==="Enter")tryPass();});
   document.getElementById("gadmin").addEventListener("click",function(){
     document.getElementById("gpass").dataset.admin="1";
-    document.getElementById("gerr").textContent="Введите пароль администратора";
+    document.getElementById("gerr").textContent="Administrator password";
     document.getElementById("gpass").focus();
   });
-  if(wantAdmin){document.getElementById("gpass").dataset.admin="1";document.getElementById("gerr").textContent="Введите пароль администратора";}
+  if(wantAdmin){document.getElementById("gpass").dataset.admin="1";document.getElementById("gerr").textContent="Administrator password";}
   document.getElementById("gpass").focus();
 }
 function tryPass(){
@@ -429,11 +424,11 @@ function tryPass(){
   var adm=document.getElementById("gpass").dataset.admin==="1";
   if(adm){
     if(v===ADMIN_PASS){ADMIN=true;lsSet("bis_week",weekId());lsSet("bis_admin","1");enter();return;}
-    document.getElementById("gerr").textContent="Неверный пароль администратора";return;
+    document.getElementById("gerr").textContent="Wrong administrator password";return;
   }
   if(v===ADMIN_PASS){ADMIN=true;lsSet("bis_week",weekId());lsSet("bis_admin","1");enter();return;}
   if(v.toLowerCase()===weekPass().toLowerCase()){lsSet("bis_week",weekId());enter();return;}
-  document.getElementById("gerr").textContent="Неверный пароль";
+  document.getElementById("gerr").textContent="Wrong password";
 }
 function enter(){
   document.getElementById("gate").classList.add("hidden");
@@ -632,10 +627,10 @@ function unlocked(){var a=lsGet("bis_acct");if(a&&checkAccount(a))return true;re
 function tryPass(){
   var v=(document.getElementById("gpass").value||"").trim();
   var adm=document.getElementById("gpass").dataset.admin==="1";
-  if(adm){if(v===ADMIN_PASS){ADMIN=true;lsSet("bis_admin","1");enter();return;}document.getElementById("gerr").textContent="Неверный пароль администратора";return;}
+  if(adm){if(v===ADMIN_PASS){ADMIN=true;lsSet("bis_admin","1");enter();return;}document.getElementById("gerr").textContent="Wrong administrator password";return;}
   if(v===ADMIN_PASS){ADMIN=true;lsSet("bis_admin","1");enter();return;}
   if(checkAccount(v)){lsSet("bis_acct",v);enter();return;}
-  document.getElementById("gerr").textContent="Неверный или просроченный пароль";
+  document.getElementById("gerr").textContent="Wrong or expired password";
 }
 function initGate(){
   if(location.hash==="#logout"){lsDel("bis_acct");lsDel("bis_admin");location.replace(location.href.split("#")[0]);return;}
@@ -643,8 +638,8 @@ function initGate(){
   if(unlocked()&&!wantAdmin){if(lsGet("bis_admin")==="1")ADMIN=true;enter();return;}
   document.getElementById("gbtn").addEventListener("click",tryPass);
   document.getElementById("gpass").addEventListener("keydown",function(e){if(e.key==="Enter")tryPass();});
-  document.getElementById("gadmin").addEventListener("click",function(){document.getElementById("gpass").dataset.admin="1";document.getElementById("gerr").textContent="Введите пароль администратора";document.getElementById("gpass").focus();});
-  if(wantAdmin){document.getElementById("gpass").dataset.admin="1";document.getElementById("gerr").textContent="Введите пароль администратора";}
+  document.getElementById("gadmin").addEventListener("click",function(){document.getElementById("gpass").dataset.admin="1";document.getElementById("gerr").textContent="Administrator password";document.getElementById("gpass").focus();});
+  if(wantAdmin){document.getElementById("gpass").dataset.admin="1";document.getElementById("gerr").textContent="Administrator password";}
   document.getElementById("gpass").focus();
 }
 function enter(){
@@ -747,7 +742,14 @@ function render(){
   document.getElementById("grid").innerHTML="";more();renderActive();updFilterUI();
 }
 /* Excel со скриншотами и без имён авторов */
-var SITE_IMG_BASE="https://bis-media.github.io/stock-nature-catalog/";
+/* база для скринов в Excel: берём домен, с которого открыт сайт (работает и на tw1.su, и на GitHub Pages);
+   при локальной проверке подставляем боевой адрес, иначе картинки в Excel не откроются */
+var SITE_IMG_BASE=(function(){
+  var h=location.hostname;
+  if((location.protocol==="http:"||location.protocol==="https:")&&h&&h!=="localhost"&&h!=="127.0.0.1"&&h.slice(-6)!==".local")
+    return location.origin+location.pathname.replace(/[^/]*$/,"");
+  return "https://livenature-katalog.tw1.su/";
+})();
 function exportXls(){
   var L=LG();
   if(!filtered||!filtered.length){alert(L.empty);return;}
@@ -780,7 +782,7 @@ function initGate(){
   if(unlocked()&&!wantAdmin){if(lsGet("bis_admin")==="1")ADMIN=true;enter();return;}
   document.getElementById("gbtn").addEventListener("click",tryPass);
   document.getElementById("gpass").addEventListener("keydown",function(e){if(e.key==="Enter")tryPass();});
-  if(wantAdmin){document.getElementById("gpass").dataset.admin="1";document.getElementById("gerr").textContent="Введите пароль администратора";}
+  if(wantAdmin){document.getElementById("gpass").dataset.admin="1";document.getElementById("gerr").textContent="Administrator password";}
   document.getElementById("gpass").focus();
 }
 
@@ -795,6 +797,93 @@ function openAccounts(){
     '<div class="ebtns"><button class="eCancel" id="acctClose">Закрыть</button></div>';
   document.getElementById("acctClose").onclick=closeEdit;
   document.getElementById("acctCreate").onclick=function(){var nm=(document.getElementById("acctName").value||"").trim();if(!nm)return;var d=parseInt(document.getElementById("acctDays").value,10);if(!d||d<1)d=7;if(d>3650)d=3650;var m=makeAccount(d);var lst=loadAccts();lst.push({name:nm,pw:m.pw,exp:m.exp});saveAccts(lst);openAccounts();};
+  box.onclick=function(e){var d=e.target.closest(".dDel");if(d){var pw=d.getAttribute("data-acct");saveAccts(loadAccts().filter(function(x){return x.pw!==pw;}));openAccounts();}};
+  document.getElementById("emodal").classList.add("on");
+}
+
+/* ==== ЯЗЫК АККАУНТА: язык зашит в пароль, выбирается админом при выдаче ==== */
+/* Формат пароля:
+   старый  utv-<exp36>-<nonce4><sig6>          (тело 10) — считается русским
+   новый   utv-<exp36>-<lang1><nonce4><sig6>   (тело 11) — lang: r=ru, e=en
+   Язык входит в подпись, поэтому подменить его в пароле вручную нельзя. */
+function acctSig2(eb,lc,nonce){return cyrb53(eb+"|"+lc+"|"+nonce+"|"+ACCT_SECRET).toString(36).slice(0,6);}
+function makeAccount(days,lang){
+  lang=(lang==="en")?"en":"ru";
+  var lc=(lang==="en")?"e":"r";
+  var exp=dayNum()+(days||7);
+  var eb=exp.toString(36);
+  var nonce=(Math.random().toString(36)+"0000").slice(2,6);
+  return {pw:"utv-"+eb+"-"+lc+nonce+acctSig2(eb,lc,nonce),exp:exp,lang:lang};
+}
+/* возвращает false либо {exp,lang} — объект истинный, поэтому старые if(checkAccount(..)) работают */
+function checkAccount(pw){
+  pw=(pw||"").trim().toLowerCase();
+  if(pw.indexOf("utv-")!==0)return false;
+  var rest=pw.slice(4),i=rest.indexOf("-");
+  if(i<1)return false;
+  var eb=rest.slice(0,i),body=rest.slice(i+1),lang="ru",nonce,sig;
+  if(body.length===10){
+    nonce=body.slice(0,4);sig=body.slice(4);
+    if(acctSig(eb,nonce)!==sig)return false;
+  }else if(body.length===11){
+    var lc=body.charAt(0);
+    if(lc!=="r"&&lc!=="e")return false;
+    nonce=body.slice(1,5);sig=body.slice(5);
+    if(acctSig2(eb,lc,nonce)!==sig)return false;
+    lang=(lc==="e")?"en":"ru";
+  }else return false;
+  var exp=parseInt(eb,36);
+  if(isNaN(exp))return false;
+  if(dayNum()>exp)return false;
+  return {exp:exp,lang:lang};
+}
+function acctLang(){var a=checkAccount(lsGet("bis_acct"));return (a&&a.lang)||"ru";}
+/* язык страницы задаётся при входе — по паролю клиента; админка всегда по-русски */
+function enter(){
+  state.lang=ADMIN?"ru":acctLang();
+  document.documentElement.lang=state.lang;
+  document.getElementById("gate").classList.add("hidden");
+  if(ADMIN){
+    document.getElementById("adminBar").classList.add("on");
+    document.getElementById("abAdd").onclick=openAdd;
+    document.getElementById("abDict").onclick=openDict;
+    var ab=document.getElementById("abAcct");if(ab)ab.onclick=openAccounts;
+    document.getElementById("abExit").onclick=function(){lsDel("bis_admin");location.reload();};
+  }
+  loadCatalogs();
+}
+/* после сборки каталога дотягиваем интерфейс до нужного языка */
+var _buildCombined_ru=buildCombined;
+buildCombined=function(){_buildCombined_ru.apply(this,arguments);if(state.lang!=="ru")applyLang();};
+/* ==== аккаунты: админ задаёт срок в днях и язык интерфейса ==== */
+function openAccounts(){
+  var box=document.getElementById("ebox");box.onclick=null;
+  var a=loadAccts();saveAccts(a);
+  var rows=a.map(function(x){
+    var left=x.exp-dayNum();
+    var lg=(x.lang==="en")?"EN":"RU";
+    return '<div class="drow"><span class="dname">'+esc(x.name)+
+      ' <span style="display:inline-block;padding:1px 6px;border-radius:4px;background:#eef1f5;color:#4a5568;font-size:10.5px;font-weight:700;vertical-align:1px">'+lg+'</span>'+
+      '<br><code style="font-size:12.5px;color:#f15a24">'+esc(x.pw)+'</code>'+
+      '<br><span style="font-size:10.5px;color:#9aa">пароль — передайте пользователю</span></span>'+
+      '<span class="dcnt">'+left+' дн.</span><button class="dDel" data-acct="'+esc(x.pw)+'">✕</button></div>';
+  }).join("")||'<div style="color:#9aa;font-size:13px;padding:8px 0">Пока нет аккаунтов</div>';
+  box.innerHTML='<h2>Аккаунты доступа</h2><p style="font-size:12.5px;color:#7a7a7a;margin:0 0 12px">Создай аккаунт: название, срок действия в днях и язык интерфейса — получишь пароль. Каталог откроется у клиента сразу на выбранном языке, переключателя у него нет. Когда срок выйдет, пароль перестаёт пускать и пропадает из списка.</p>'+
+    '<div class="daddrow"><input id="acctName" placeholder="Иван, компания Рога и копыта" style="flex:1">'+
+    '<select id="acctLang" title="язык интерфейса у клиента" style="padding:7px 8px;border:1px solid #cfd8e3;border-radius:7px;font-size:13px"><option value="ru">Русский</option><option value="en">English</option></select>'+
+    '<input id="acctDays" type="number" min="1" max="3650" value="7" title="срок в днях" style="width:64px;padding:7px 8px;border:1px solid #cfd8e3;border-radius:7px;font-size:13px"><span style="align-self:center;font-size:12px;color:#7a7a7a">дн.</span>'+
+    '<button class="dAddBtn" id="acctCreate">Создать</button></div>'+
+    '<div style="margin-top:14px">'+rows+'</div>'+
+    '<div class="ebtns"><button class="eCancel" id="acctClose">Закрыть</button></div>';
+  document.getElementById("acctClose").onclick=closeEdit;
+  document.getElementById("acctCreate").onclick=function(){
+    var nm=(document.getElementById("acctName").value||"").trim();if(!nm)return;
+    var d=parseInt(document.getElementById("acctDays").value,10);if(!d||d<1)d=7;if(d>3650)d=3650;
+    var lg=document.getElementById("acctLang").value==="en"?"en":"ru";
+    var m=makeAccount(d,lg);
+    var lst=loadAccts();lst.push({name:nm,pw:m.pw,exp:m.exp,lang:m.lang});saveAccts(lst);
+    openAccounts();
+  };
   box.onclick=function(e){var d=e.target.closest(".dDel");if(d){var pw=d.getAttribute("data-acct");saveAccts(loadAccts().filter(function(x){return x.pw!==pw;}));openAccounts();}};
   document.getElementById("emodal").classList.add("on");
 }
